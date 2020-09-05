@@ -8,6 +8,7 @@ class PicasApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// This is a personal project, bugs are oke, no need for tests
 	}
 
 }
