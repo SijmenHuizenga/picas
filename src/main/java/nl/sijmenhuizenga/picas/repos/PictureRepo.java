@@ -7,4 +7,5 @@ public interface PictureRepo extends CrudRepository<Picture, Long> {
 
     Picture findById(long id);
 
+    int countAllByFilepath(String filepath);
 }
