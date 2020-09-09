@@ -20,15 +20,15 @@
 </template>
 
 <script lang="ts">
-  import { Options, Vue } from 'vue-class-component'
-  import Sidebar from '@/components/Sidebar.vue' // @ is an alias to /src
+import { Options, Vue } from 'vue-class-component'
+import Sidebar from '@/components/Sidebar.vue' // @ is an alias to /src
 
   @Options({
     components: {
       Sidebar
     }
   })
-  export default class Home extends Vue {}
+export default class Home extends Vue {}
 </script>
 
 <style lang="scss">
