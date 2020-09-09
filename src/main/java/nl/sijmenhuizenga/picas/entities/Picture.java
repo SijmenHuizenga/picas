@@ -1,9 +1,6 @@
 package nl.sijmenhuizenga.picas.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Picture {
@@ -13,6 +10,9 @@ public class Picture {
     private Long id;
 
     private String filepath;
+
+    private int width;
+    private int height;
 
     protected Picture() {}
 
@@ -42,5 +42,26 @@ public class Picture {
 
     public void setFilepath(String filepath) {
         this.filepath = filepath;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setSize(ImageSize size) {
+        this.width = size.width;
+        this.height = size.height;
     }
 }
