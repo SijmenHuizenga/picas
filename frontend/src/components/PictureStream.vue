@@ -1,13 +1,11 @@
 <template>
-  <div class="fav-list">
+  <div class="photogrid">
     <div v-for="picture in pictures" :key="picture.id"
          :style="'flex-grow:' + picture.width*100/picture.height + ';flex-basis:' + picture.width*240/picture.height + 'px;'">
-      <img :src="'http://localhost:8080/media/' + picture.filepath"/>
+      <img :src="'http://localhost:8080/media/' + picture.filepath" :alt="picture.filepath"/>
       <i :style="'padding-bottom:' + (picture.height/picture.width*100) + '%'"></i>
     </div>
   </div>
-
-
 </template>
 
 <script lang="ts">
@@ -24,32 +22,48 @@
         .then((response: any) => (this.pictures = response.data))
     }
 
+    created () {
+      window.addEventListener('scroll', this.handleScroll);
+    }
+
+    destroyed () {
+      window.removeEventListener('scroll', this.handleScroll);
+    }
+
+    handleScroll (event :any) {
+      // Any code to be executed when the window is scrolled
+    }
+
 
   }
 </script>
 
 <style>
-  .fav-list{
+  .photogrid {
     display: flex;
     flex-wrap: wrap;
     margin: 2px;
   }
-  /* .fav-list::after{
+
+  .photogrid::after {
     content: '';
     flex-grow: 999999999;
     order: 999999999;
-  } */
-  .fav-list > div{
+  }
+
+  .photogrid > div {
     margin: 2px;
     background-color: violet;
     position: relative;
   }
-  .fav-list > div > i {
+
+  .photogrid > div > i {
     display: block;
     background-color: lightblue;
     /* display: none; */
   }
-  .fav-list > div > img {
+
+  .photogrid > div > img {
     position: absolute;
     vertical-align: bottom;
     top: 0;
@@ -57,7 +71,8 @@
     height: 100%;
     object-fit: cover;
   }
-  .fav-list > .placeholder{
+
+  .photogrid > .placeholder {
     flex-grow: 100;
     flex-basis: 240px;
     height: 0;

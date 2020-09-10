@@ -35,6 +35,9 @@ public class ImportError {
         PrintWriter pw = new PrintWriter(sw);
         error.printStackTrace(pw);
         this.stacktrace = sw.toString();
+        if(this.stacktrace.length() > 10000) {
+            this.stacktrace = this.stacktrace.substring(0, 10000);
+        }
 
         this.timestamp = System.currentTimeMillis() / 1000L;
     }

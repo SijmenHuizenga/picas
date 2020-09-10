@@ -14,6 +14,9 @@ public class Picture {
     private int width;
     private int height;
 
+    // millisecond unix timestamp
+    private long creationTimestamp;
+
     protected Picture() {}
 
     public Picture(String filepath) {
@@ -63,5 +66,13 @@ public class Picture {
     public void setSize(ImageSize size) {
         this.width = size.width;
         this.height = size.height;
+    }
+
+    public long getCreationTimestamp() {
+        return creationTimestamp;
+    }
+
+    public void setCreationTimestamp(long creationTimestamp) {
+        this.creationTimestamp = creationTimestamp;
     }
 }

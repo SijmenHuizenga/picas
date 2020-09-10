@@ -27,7 +27,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -84,7 +86,51 @@ public class PictureSync {
         Metadata metadata = getMetadata(path);
         Picture p = new Picture(relative(path));
         p.setSize(getImageSize(metadata, path));
+        p.setCreationTimestamp(getImageCreationTimestamp(metadata, path));
         return p;
+    }
+
+    private long getImageCreationTimestamp(Metadata metadata, Path path) throws IOException {
+        long timestamp = getImageCreationTimestampFromMetadata(metadata);
+        if(timestamp == -1) {
+            try {
+                timestamp = getImageCreationTimestampFromFile(path);
+            }catch (Exception e) {
+                throw new IOException("Could not determinate creation timestamp of image. No relevant metadata available. Fallback reading image creation timestamp failed.", e);
+            }
+        }
+        return timestamp;
+    }
+
+    private long getImageCreationTimestampFromMetadata(Metadata metadata) {
+        ExifSubIFDDirectory exif = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+        if(exif != null) {
+            Date date = exif.getDate(ExifSubIFDDirectory.TAG_DATETIME);
+            if(date != null) {
+                return date.getTime();
+            }
+            date = exif.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+            if(date != null) {
+                return date.getTime();
+            }
+        }
+        PngDirectory png = metadata.getFirstDirectoryOfType(PngDirectory.class);
+        if(png != null) {
+            Date date = png.getDate(PngDirectory.TAG_LAST_MODIFICATION_TIME);
+            if(date != null) {
+                return date.getTime();
+            }
+        }
+        return -1;
+    }
+
+    private long getImageCreationTimestampFromFile(Path path) throws IOException {
+        try {
+            BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
+            return attr.creationTime().toMillis();
+        } catch (Exception e) {
+            throw new IOException("Coud not read timestamp from file", e);
+        }
     }
 
     private boolean isFilePreviouslyImported(String relativePath) {
