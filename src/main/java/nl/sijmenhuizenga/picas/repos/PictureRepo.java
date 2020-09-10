@@ -16,4 +16,6 @@ public interface PictureRepo extends CrudRepository<Picture, Long> {
     @Query(value = "SELECT date(to_timestamp(creation_timestamp/1000)) as date, COUNT(*) as count from picture group by date order by date", nativeQuery = true)
     List<ImageGroup> countPerDay();
 
+    @Query(value = "SELECT * from picture where date(to_timestamp(creation_timestamp/1000)) = date(:searchdate)", nativeQuery = true)
+    List<Picture> findAllOnDate(String searchdate);
 }

@@ -1,6 +1,6 @@
 <template>
-  <div class="photogrid">
-    <div v-for="picture in pictures" :key="picture.id"
+  <div class="photogrid" v-for="section in sections" :key="section.date">
+    <div v-for="picture in section.pictures" :key="picture.id"
          :style="'flex-grow:' + picture.width*100/picture.height + ';flex-basis:' + picture.width*240/picture.height + 'px;'">
       <img :src="'http://localhost:8080/media/' + picture.filepath" :alt="picture.filepath"/>
       <i :style="'padding-bottom:' + (picture.height/picture.width*100) + '%'"></i>
@@ -14,12 +14,21 @@
   const axios = require('axios').default;
 
   export default class PictureStream extends Vue {
-    pictures = []
+    allDays = []
+    sections : {date :string, pictures :{filepath :string, width :number, height :number}[]}[] = []
 
     mounted() {
       axios
-        .get('http://localhost:8080/pictures')
-        .then((response: any) => (this.pictures = response.data))
+        .get('http://localhost:8080/days')
+        .then((response: any) => {
+          this.allDays = response.data;
+          this.allDays.forEach((day :{date :string, count :number}) => {
+            axios.get('http://localhost:8080/day/'+day.date)
+                 .then((response :any) => {
+                   this.sections.push({'date': day.date, 'pictures': response.data})
+                 })
+          })
+        })
     }
 
     created () {
