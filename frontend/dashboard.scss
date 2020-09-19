@@ -1,0 +1,32 @@
+body {
+  font-size: .875rem;
+}
+.container-fluid {
+  padding: 0;
+}
+.navbar {
+  box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.1)
+}
+.navbar .navbar-nav {
+  padding-top: .4rem;
+  padding-bottom: .4rem;
+}
+.nav-search {
+  color: #000;
+  background-color: rgba(0, 0, 0, .05);
+  border-color: rgba(255, 255, 255, .1);
+  border-radius: 8px;
+}
+@media (min-width: 768px) {
+  .nav-search {
+    min-width: 350px;
+  }
+}
+.nav-search::placeholder {
+  color: rgba(0, 0, 0, .45);
+}
+.nav-search:focus {
+  border-color: transparent;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
+  background-color: rgba(0, 0, 0, .05);
+}
