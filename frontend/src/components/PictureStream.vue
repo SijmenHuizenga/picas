@@ -1,9 +1,7 @@
 <template>
-  <div class="photogrid" v-for="section in sections" :key="section.date">
-    <div v-for="picture in section.pictures" :key="picture.id"
-         :style="'flex-grow:' + picture.width*100/picture.height + ';flex-basis:' + picture.width*240/picture.height + 'px;'">
-      <img :src="'http://localhost:8080/media/' + picture.filepath" :alt="picture.filepath"/>
-      <i :style="'padding-bottom:' + (picture.height/picture.width*100) + '%'"></i>
+  <div class="photostream-wrapper">
+    <div class="day" v-for="day in days" :key="day.date" :style="'top: ' + day.estimatedDistanceFromTop + 'px'">
+      {{day.count}}
     </div>
   </div>
 </template>
@@ -11,24 +9,46 @@
 <script lang="ts">
   import {Vue} from 'vue-class-component';
 
+  const targetHeight = 180;
+  const rowHeaderHeight = 50;
+
   const axios = require('axios').default;
 
   export default class PictureStream extends Vue {
-    allDays = []
-    sections : {date :string, pictures :{filepath :string, width :number, height :number}[]}[] = []
+    days : {date :string, count :number, estimatedHeight :number, estimatedDistanceFromTop :number}[] = []
 
     mounted() {
+
       axios
         .get('http://localhost:8080/days')
         .then((response: any) => {
-          this.allDays = response.data;
-          this.allDays.forEach((day :{date :string, count :number}) => {
-            axios.get('http://localhost:8080/day/'+day.date)
-                 .then((response :any) => {
-                   this.sections.push({'date': day.date, 'pictures': response.data})
-                 })
+          const days : {date :string, count :number}[] = response.data;
+
+          let photoCount = 0;
+          days.forEach(day => {
+            photoCount += day.count;
           })
+
+          let commulativeHeight = 0;
+          days.forEach((day :{date :string, count :number}) => {
+            const estimatedHeight = this.estimatedRowHeight(day.count);
+            this.days.push({
+              date: day.date,
+              count: day.count,
+              estimatedHeight: estimatedHeight,
+              estimatedDistanceFromTop: commulativeHeight})
+            commulativeHeight += estimatedHeight;
+          });
         })
+    }
+
+    estimatedRowHeight(numberOfPictures :number) {
+      // Ideally we would use the average aspect ratio for the photoset, however assume
+      // a normal landscape aspect ratio of 3:2, then discount for the likelihood we
+      // will be scaling down and coalescing.
+      const unwrappedWidth = (3 / 2) * numberOfPictures * targetHeight * (7 / 10);
+      const rows = Math.ceil(unwrappedWidth / window.innerWidth);
+      return rows * targetHeight + rowHeaderHeight;
     }
 
     created () {
@@ -48,6 +68,9 @@
 </script>
 
 <style>
+  .day {
+    position: absolute;
+  }
   .photogrid {
     display: flex;
     flex-wrap: wrap;
